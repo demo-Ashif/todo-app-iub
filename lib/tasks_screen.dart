@@ -1,7 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app_iub/task.dart';
 
-class TasksScreen extends StatelessWidget {
+import 'add_task_screen.dart';
+
+class TasksScreen extends StatefulWidget {
   const TasksScreen({super.key});
+
+  @override
+  State<TasksScreen> createState() => _TasksScreenState();
+}
+
+class _TasksScreenState extends State<TasksScreen> {
+  List<Task> _tasks = [
+    Task(name: 'Learn Flutter'),
+    Task(name: 'Teach State Management'),
+    Task(name: 'Import Provider Package'),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +27,26 @@ class TasksScreen extends StatelessWidget {
           Icons.add,
           color: Colors.white,
         ),
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: AddTaskScreen(
+                  onAddTask: (newTask) {
+                    setState(() {
+                      _tasks.add(Task(name: newTask));
+                    });
+                  },
+                ),
+              ),
+            ),
+          );
+        },
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -54,7 +87,7 @@ class TasksScreen extends StatelessWidget {
                       fontWeight: FontWeight.w700),
                 ),
                 Text(
-                  "3 Tasks",
+                  "${_tasks.length} Tasks",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -65,9 +98,34 @@ class TasksScreen extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              //height: 100,
-              color: Colors.white,
+              padding: EdgeInsets.symmetric(
+                horizontal: 20.0,
+              ),
+              // color: Colors.white,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.0),
+                  topRight: Radius.circular(20.0),
+                ),
+              ),
+              child: Column(
+                children: [
+                  //ListView.Builder
+                  for (var task in _tasks)
+                    ListTile(
+                      title: Text(task.name),
+                      trailing: Checkbox(
+                        value: task.isDone,
+                        onChanged: (value) {
+                          setState(() {
+                            task.isDone = value!;
+                          });
+                        },
+                      ),
+                    ),
+                ],
+              ),
             ),
           )
         ],
