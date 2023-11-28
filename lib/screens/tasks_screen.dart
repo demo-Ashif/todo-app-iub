@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app_iub/task.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app_iub/models/TaskData.dart';
+import 'package:todo_app_iub/models/task.dart';
 
+import '../widgets/tasks_list.dart';
 import 'add_task_screen.dart';
 
 class TasksScreen extends StatefulWidget {
@@ -11,12 +14,6 @@ class TasksScreen extends StatefulWidget {
 }
 
 class _TasksScreenState extends State<TasksScreen> {
-  List<Task> _tasks = [
-    Task(name: 'Learn Flutter'),
-    Task(name: 'Teach State Management'),
-    Task(name: 'Import Provider Package'),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,13 +33,7 @@ class _TasksScreenState extends State<TasksScreen> {
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
-                child: AddTaskScreen(
-                  onAddTask: (newTask) {
-                    setState(() {
-                      _tasks.add(Task(name: newTask));
-                    });
-                  },
-                ),
+                child: AddTaskScreen(),
               ),
             ),
           );
@@ -87,7 +78,7 @@ class _TasksScreenState extends State<TasksScreen> {
                       fontWeight: FontWeight.w700),
                 ),
                 Text(
-                  "${_tasks.length} Tasks",
+                  "${Provider.of<TaskData>(context).taskCount} Tasks",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -109,23 +100,7 @@ class _TasksScreenState extends State<TasksScreen> {
                   topRight: Radius.circular(20.0),
                 ),
               ),
-              child: Column(
-                children: [
-                  //ListView.Builder
-                  for (var task in _tasks)
-                    ListTile(
-                      title: Text(task.name),
-                      trailing: Checkbox(
-                        value: task.isDone,
-                        onChanged: (value) {
-                          setState(() {
-                            task.isDone = value!;
-                          });
-                        },
-                      ),
-                    ),
-                ],
-              ),
+              child: TasksList(),
             ),
           )
         ],
